@@ -1,0 +1,93 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: ticket-management-service
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    consumer:
+      group-id: ticket-management-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+      auto-offset-reset: earliest
+
+  datasource:
+    url: jdbc:oracle:thin:@localhost:1521/XEPDB1
+    username: ticket_user
+    password: ticket_password
+    driver-class-name: oracle.jdbc.OracleDriver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 6
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: TicketHikariPool
+
+  jpa:
+    database-platform: org.hibernate.dialect.OracleDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/ticket-support-realm
+          jwk-set-uri: http://localhost:8180/realms/ticket-support-realm/protocol/openid-connect/certs
+
+kafka:
+  topics:
+    ticket-created: ticket.created
+    ticket-updated: ticket.updated
+    comment-created: comment.created
+    ai-analysis-result: ai.analysis.result
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+  health:
+    rabbit:
+      enabled: true
+    db:
+      enabled: true
+
+keycloak:
+  realm: ticket-management-realm
+  auth-server-url: http://localhost:8180
+  resource: ticket-management-service
+  credentials:
+    secret: F2FEE0AUxdIwORkmdbzuH0pWoYODH2zL
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: INFO
+    org.keycloak: INFO
