@@ -35,7 +35,7 @@ public class AIAnalysisConsumer {
                 ticketService.updateTicketWithAIAnalysis(
                         event.getTicketId(),
                         event.getSentimentScore(),
-                        event.getSuggestedCategoryId());
+                        event.getSuggestedCategoryName());
             }
             log.info("Successfully processed AI analysis result");
         } catch(Exception e){

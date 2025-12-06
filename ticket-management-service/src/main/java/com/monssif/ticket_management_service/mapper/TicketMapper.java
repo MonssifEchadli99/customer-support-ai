@@ -26,7 +26,6 @@ public interface TicketMapper {
     @Mapping(source = "status.isFinal", target = "isStatusFinal")
     @Mapping(source = "aiSuggestedCategory.id", target = "aiSuggestedCategoryId")
     @Mapping(source = "aiSuggestedCategory.name", target = "aiSuggestedCategoryName")
-    @Mapping(target = "isAssigned", expression = "java(ticket.isAssigned())")
     @Mapping(target = "isResolved", expression = "java(ticket.isResolved())")
     @Mapping(target = "commentsCount", expression = "java(ticket.getComments() != null ? ticket.getComments().size() : 0)")
     TicketResponseDTO toResponseDTO(Ticket ticket);
@@ -39,7 +38,6 @@ public interface TicketMapper {
     @Mapping(source = "priority.name", target = "priorityName")
     @Mapping(source = "priority.level", target = "priorityLevel")
     @Mapping(source = "status.name", target = "statusName")
-    @Mapping(target = "isAssigned", expression = "java(ticket.isAssigned())")
     @Mapping(target = "isResolved", expression = "java(ticket.isResolved())")
     TicketSummaryDTO toSummaryDTO(Ticket ticket);
 }

@@ -18,7 +18,6 @@ public interface CommentMapper {
     @Mapping(source = "user.role", target = "userRole")
 
     @Mapping(target = "isPublic", expression = "java(comment.isPublic())")
-    @Mapping(target = "hasSentimentAnalysis", expression = "java(comment.hasSentimentAnalysis())")
     @Mapping(target = "visibility", expression = "java(comment.getIsInternal() ? \"Internal (Agents Only)\" : \"Public\")")
     CommentResponseDTO toResponseDTO(Comment comment);
 }

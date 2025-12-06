@@ -28,7 +28,6 @@ public class CommentResponseDTO {
     private Boolean isPublic;
 
     private Double aiSentimentScore;
-    private Boolean hasSentimentAnalysis;
 
     private LocalDateTime createdAt;
 

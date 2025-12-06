@@ -19,6 +19,22 @@ services:
     networks:
       - ai-support-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis-ai-cache
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - ai-support-network
+
   kafka:
     image: confluentinc/cp-kafka:7.5.0
     container_name: kafka-broker
@@ -94,6 +110,8 @@ services:
 
 volumes:
   oracle-data:
+    driver: local
+  redis-data:
     driver: local
   kafka-data:
     driver: local

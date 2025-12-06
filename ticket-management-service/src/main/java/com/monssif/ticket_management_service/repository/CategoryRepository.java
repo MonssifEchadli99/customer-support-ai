@@ -21,6 +21,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     boolean existsByName(String name);
 
+    Optional<Category> findByNameIgnoreCase(String name);
+
 
     @Query("SELECT COUNT(t) FROM Ticket t WHERE t.category.id = :categoryId")
     Long countTicketsByCategoryId(@Param("categoryId") Long categoryId);

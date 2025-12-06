@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -306,7 +308,7 @@ public class TicketService {
 
 
     @Transactional
-    public void updateTicketWithAIAnalysis(Long ticketId, Double sentimentScore, Long suggestedCategoryId) {
+    public void updateTicketWithAIAnalysis(Long ticketId, Double sentimentScore, String suggestedCategoryName) {
         log.info("Updating ticket {} with AI analysis results", ticketId);
 
         Ticket ticket = ticketRepository.findById(ticketId)
@@ -314,15 +316,18 @@ public class TicketService {
 
         ticket.setAiSentimentScore(sentimentScore);
 
-        if (suggestedCategoryId != null) {
-            Category suggestedCategory = categoryRepository.findById(suggestedCategoryId)
-                    .orElseThrow(() -> new InvalidTicketOperationException(
-                            "AI Suggested Category not found with ID: " + suggestedCategoryId));
-            ticket.setAiSuggestedCategory(suggestedCategory);
+        if(Objects.nonNull(suggestedCategoryName)){
+            Optional<Category> suggestedCategory = categoryRepository.findByNameIgnoreCase(suggestedCategoryName);
+            if(suggestedCategory.isPresent()){
+                ticket.setAiSuggestedCategory(suggestedCategory.get());
+                log.info("Set AI suggested category: {}", suggestedCategoryName);
+            } else{
+                log.warn("AI suggested category '{}' not found in database - ignoring", suggestedCategoryName);
+            }
         }
 
         ticketRepository.save(ticket);
         log.info("Ticket {} updated with AI analysis - Sentiment: {}, Suggested Category: {}",
-                ticketId, sentimentScore, suggestedCategoryId);
+                ticket.getTitle(), sentimentScore, suggestedCategoryName);
     }
 }
